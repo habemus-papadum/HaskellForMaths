@@ -1,0 +1,126 @@
+Name:                HaskellForMaths
+Version:             0.4.8
+Category:            Math
+Description:         A library of maths code in the areas of combinatorics, group theory, commutative algebra, and non-commutative algebra. The library is mainly intended as an educational resource, but does have efficient implementations of several fundamental algorithms.
+Synopsis:            Combinatorics, group theory, commutative algebra, non-commutative algebra
+License:             BSD3
+License-file:        license.txt
+Author:              David Amos
+Maintainer:          haskellformaths-at-gmail-dot-com
+Homepage:            http://haskellformaths.blogspot.com/
+Stability:           experimental
+Build-Type:          Simple
+Cabal-Version:       >=1.8
+
+
+Library
+    hs-source-dirs: src
+    Build-Depends:
+        base >= 2 && < 5,
+        containers,
+        array,
+        random
+    Exposed-modules:
+        Math.Algebra.LinearAlgebra,
+        Math.Algebra.Field.Base,
+        Math.Algebra.Field.Extension,
+        Math.Algebra.Group.PermutationGroup,
+        Math.Algebra.Group.SchreierSims,
+        Math.Algebra.Group.RandomSchreierSims,
+        Math.Algebra.Group.Subquotients,
+        Math.Algebra.Group.StringRewriting,
+        Math.Algebra.Group.CayleyGraph,
+        Math.Algebra.NonCommutative.NCPoly,
+        Math.Algebra.NonCommutative.GSBasis,
+        Math.Algebra.NonCommutative.TensorAlgebra,
+        Math.Algebras.AffinePlane,
+        Math.Algebras.Commutative,
+        Math.Algebras.GroupAlgebra,
+        Math.Algebras.LaurentPoly,
+        Math.Algebras.Matrix,
+        Math.Algebras.NonCommutative,
+        Math.Algebras.Octonions,
+        Math.Algebras.Quaternions,
+        Math.Algebras.Structures,
+        Math.Algebras.TensorAlgebra,
+        Math.Algebras.TensorProduct,
+        Math.Algebras.VectorSpace,
+        Math.Combinatorics.CombinatorialHopfAlgebra,
+        Math.Combinatorics.Graph,
+        Math.Combinatorics.GraphAuts,
+        Math.Combinatorics.StronglyRegularGraph,
+        Math.Combinatorics.Design,
+        Math.Combinatorics.FiniteGeometry,
+        Math.Combinatorics.Hypergraph,
+        Math.Combinatorics.LatinSquares,
+        Math.Combinatorics.Poset,
+        Math.Combinatorics.IncidenceAlgebra,
+        Math.Combinatorics.Digraph,
+        Math.Combinatorics.Matroid,
+        Math.Common.IntegerAsType,
+        Math.Common.ListSet,
+        Math.CommutativeAlgebra.Polynomial,
+        Math.CommutativeAlgebra.GroebnerBasis,
+        Math.Core.Utils,
+        Math.Core.Field,
+        Math.NumberTheory.Prime,
+        Math.NumberTheory.Factor,
+        Math.NumberTheory.QuadraticField,
+        Math.Projects.RootSystem,
+        Math.Projects.Rubik,
+        Math.Projects.MiniquaternionGeometry,
+        Math.Projects.ChevalleyGroup.Classical,
+        Math.Projects.ChevalleyGroup.Exceptional,
+        Math.Projects.KnotTheory.Braid,
+        Math.Projects.KnotTheory.LaurentMPoly,
+        Math.Projects.KnotTheory.TemperleyLieb,
+        Math.Projects.KnotTheory.IwahoriHecke,
+        Math.QuantumAlgebra.OrientedTangle,
+        Math.QuantumAlgebra.QuantumPlane,
+        Math.QuantumAlgebra.Tangle,
+        Math.QuantumAlgebra.TensorCategory
+    ghc-options:       -w
+
+test-suite test
+    type: exitcode-stdio-1.0
+    build-depends:
+        base >= 2 && < 5,
+        containers,
+        array,
+        random,
+        HaskellForMaths,
+        HUnit,
+        QuickCheck
+    hs-source-dirs: test
+    main-is: Math/Test/TestAll.hs
+    other-modules:
+        Math.Test.TAlgebras.TGroupAlgebra
+        Math.Test.TAlgebras.TMatrix
+        Math.Test.TAlgebras.TOctonions
+        Math.Test.TAlgebras.TQuaternions
+        Math.Test.TAlgebras.TStructures
+        Math.Test.TAlgebras.TTensorProduct
+        Math.Test.TAlgebras.TVectorSpace
+        Math.Test.TCombinatorics.TCombinatorialHopfAlgebra
+        Math.Test.TCombinatorics.TDigraph
+        Math.Test.TCombinatorics.TFiniteGeometry
+        Math.Test.TCombinatorics.TGraphAuts
+        Math.Test.TCombinatorics.TIncidenceAlgebra
+        Math.Test.TCombinatorics.TMatroid
+        Math.Test.TCombinatorics.TPoset
+        Math.Test.TCommutativeAlgebra.TGroebnerBasis
+        Math.Test.TCommutativeAlgebra.TPolynomial
+        Math.Test.TCore.TField
+        Math.Test.TCore.TUtils
+        Math.Test.TDesign
+        Math.Test.TField
+        Math.Test.TFiniteGeometry
+        Math.Test.TGraph
+        Math.Test.TNonCommutativeAlgebra
+        Math.Test.TNumberTheory.TPrimeFactor
+        Math.Test.TNumberTheory.TQuadraticField
+        Math.Test.TPermutationGroup
+        Math.Test.TProjects.TMiniquaternionGeometry
+        Math.Test.TRootSystem
+        Math.Test.TSubquotients
+
