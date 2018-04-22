@@ -97,7 +97,7 @@ test-suite test
         Math.Test.TAlgebras.TGroupAlgebra
         Math.Test.TAlgebras.TMatrix
         Math.Test.TAlgebras.TOctonions
-        Math.Test.TAlgebras.TQuaternions
+        -- Math.Test.TAlgebras.TQuaternions
         Math.Test.TAlgebras.TStructures
         Math.Test.TAlgebras.TTensorProduct
         Math.Test.TAlgebras.TVectorSpace
