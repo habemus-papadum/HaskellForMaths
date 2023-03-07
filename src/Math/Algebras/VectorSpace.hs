@@ -175,7 +175,8 @@ instance Num k => Applicative (Vect k) where
 -- so it is usually preferable to use (linear f) instead.
 instance Num k => Monad (Vect k) where
     return a = V [(a,1)]
-    V ts >>= f = V $ concat [ [(b,y*x) | let V us = f a, (b,y) <- us] | (a,x) <- ts]
+    -- V ts >>= f = V $ concat [ [(b,y*x) | let V us = f a, (b,y) <- us] | (a,x) <- ts]
+    V ts >>= f = V $ [ (b,y*x) | (a,x) <- ts, let V us = f a, (b,y) <- us]
     -- Note that as we can't assume Ord a in the Monad instance, we need to call "nf" afterwards
 
 -- |A linear map between vector spaces A and B can be defined by giving its action on the basis elements of A.

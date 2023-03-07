@@ -147,6 +147,17 @@ instance (Eq k, Num k, Ord a, Ord b, Coalgebra k a, Coalgebra k b) => Coalgebra 
     --        . (id `tf` assocL) . assocR . (comult `tf` comult)
 
 
+newtype Op b = Op b deriving (Eq, Ord, Show)
+
+instance (Eq k, Num k, Ord b, Algebra k b) => Algebra k (Op b) where
+    unit = fmap Op . unit
+    mult = nf . fmap Op . mult . fmap (\(Op a, Op b) -> (b, a)) -- ie mult . twist
+
+instance (Eq k, Num k, Ord b, Coalgebra k b) => Coalgebra k (Op b) where
+    counit = counit . fmap (\(Op b) -> b)
+    comult = nf . fmap (\(a, b) -> (Op b, Op a)) . comult . fmap (\(Op b) -> b) -- ie twist . comult
+
+
 -- The set coalgebra - can be defined on any set
 instance (Eq k, Num k) => Coalgebra k EBasis where
     counit (V ts) = sum [x | (ei,x) <- ts]  -- trace

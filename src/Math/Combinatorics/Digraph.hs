@@ -8,7 +8,7 @@
 module Math.Combinatorics.Digraph where
 
 import Data.List as L
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 
 import Math.Core.Utils (picks, toSet)
@@ -40,7 +40,7 @@ successors (DG _ es) u = [v | (u',v) <- es, u' == u]
 -- If a vertex has no predecessors (respectively successors), then it is left out of the relevant map
 adjLists (DG vs es) = adjLists' (M.empty, M.empty) es
     where adjLists' (preds,succs) ((u,v):es) =
-              adjLists' (M.insertWith' (flip (++)) v [u] preds, M.insertWith' (flip (++)) u [v] succs) es
+              adjLists' (M.insertWith (flip (++)) v [u] preds, M.insertWith (flip (++)) u [v] succs) es
           adjLists' (preds,succs) [] = (preds, succs)
 
 

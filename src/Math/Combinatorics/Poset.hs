@@ -153,8 +153,8 @@ integerPartitions n | n >= 0 = ips n n where
 isIPRefinement ys xs = dfs xs ys
     where dfs (x:xs) (y:ys) | x < y = False
                             | x == y = dfs xs ys
-                            | otherwise = or [dfs xs' ys' | y' <- y:ys, let ys' = L.delete y' (y:ys),
-                                                                        let xs' = insertDesc (x-y') xs]
+                            | otherwise = or [dfs xs' ys' | (y', ys') <- picks (y:ys),
+                                                            let xs' = insertDesc (x-y') xs]
           dfs [] [] = True
           insertDesc = L.insertBy (flip compare)
 
@@ -256,6 +256,7 @@ True
 -}
 
 
+-- This definition is incorrect. This is an order embedding. Order preserving only requires the rightward implication.
 isOrderPreserving :: (a -> b) -> Poset a -> Poset b -> Bool
 isOrderPreserving f (Poset (seta,poa)) (Poset (setb,pob)) =
     and [ x `poa` y == f x `pob` f y | x <- seta, y <- seta ]
