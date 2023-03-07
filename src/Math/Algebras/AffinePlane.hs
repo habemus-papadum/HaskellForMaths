@@ -83,8 +83,8 @@ instance Bialgebra Q (SL2 ABCD) where {}
 instance HopfAlgebra Q (SL2 ABCD) where
     antipode x = x `bind` antipode'
         where antipode' A = d
-              antipode' B = b
-              antipode' C = c
+              antipode' B = -b
+              antipode' C = -c
               antipode' D = a
 -- in the GL2 case we would need 1/det factor as well
 

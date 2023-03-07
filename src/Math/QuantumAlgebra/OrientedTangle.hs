@@ -47,8 +47,8 @@ instance MCategory OrientedTangle where
     source (ParT as) = OT $ concatMap ((\(OT os) -> os) . source) as
     source (SeqT as) = source (head as)
     target (IdT os) = OT os
-    target (CapT toR) = OT [Minus,Plus]
-    target (CapT toL) = OT [Plus,Minus]
+    target (CapT ToR) = OT [Minus,Plus]
+    target (CapT ToL) = OT [Plus,Minus]
     target (CupT _) = OT []
     target XPlus = OT [Plus,Plus]
     target XMinus = OT [Plus,Plus]

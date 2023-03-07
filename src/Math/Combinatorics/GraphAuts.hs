@@ -12,7 +12,7 @@ module Math.Combinatorics.GraphAuts (isVertexTransitive, isEdgeTransitive,
 
 import Data.Either (lefts, rights, partitionEithers)
 import qualified Data.List as L
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 import Data.Maybe
 import Data.Ord (comparing)
@@ -144,7 +144,7 @@ isIncidenceAut (G vs es) h = all (`S.member` es') [e ->^ h | e <- es]
 -- If a vertex has no neighbours then it is left out of the map
 adjLists (G vs es) = adjLists' M.empty es
     where adjLists' nbrs ([u,v]:es) =
-              adjLists' (M.insertWith' (flip (++)) v [u] $ M.insertWith' (flip (++)) u [v] nbrs) es
+              adjLists' (M.insertWith (flip (++)) v [u] $ M.insertWith (flip (++)) u [v] nbrs) es
           adjLists' nbrs [] = nbrs
 
 

@@ -53,6 +53,33 @@ import Math.Combinatorics.Poset
 import Math.CommutativeAlgebra.Polynomial
 
 
+
+class Graded b where
+  grade :: b -> Int
+
+instance Graded b => Graded (Dual b) where grade (Dual b) = grade b
+
+
+class (Eq k, Num k, Ord b, Graded b, HopfAlgebra k b) => CombinatorialHopfAlgebra k b where
+    zeta :: Vect k b -> Vect k ()
+
+
+-- Hazewinkel et al, p155.
+-- Given a graded, connected Hopf algebra, we can calculate the antipode recursively.
+-- (A connected Hopf algebra means that the counit is projection onto the grade 0 part.)
+-- Then we can calculate the antipode using mult . (id `tf` antipode) . comult == unit . counit
+gradedConnectedAntipode
+  :: (Eq k, Num k, Ord b, Bialgebra k b, Graded b) =>
+     Vect k b -> Vect k b
+gradedConnectedAntipode = linear antipode' where
+    antipode' b = if grade b == 0
+                  then return b
+                  else (negatev . mult . (id `tf` gradedConnectedAntipode) . removeLeftGradeZero . comult . return) b
+    -- removeLeftGradeZero :: Graded b => Vect k (b,b) -> Vect k (b,b)
+    removeLeftGradeZero (V ts) = V $ filter (\((l,r),_) -> grade l /= 0) ts
+
+
+
 -- SHUFFLE ALGEBRA
 -- This is just the tensor algebra, but with shuffle product (and deconcatenation coproduct)
 
@@ -60,6 +87,8 @@ import Math.CommutativeAlgebra.Polynomial
 -- However, we consider a different algebra structure, based on the shuffle product. Together with the
 -- deconcatenation coproduct, this leads to a Hopf algebra structure.
 newtype Shuffle a = Sh [a] deriving (Eq,Ord,Show)
+
+instance Graded (Shuffle a) where grade (Sh xs) = length xs
 
 -- |Construct a basis element of the shuffle algebra
 sh :: [a] -> Vect Q (Shuffle a)
@@ -105,6 +134,8 @@ instance Ord SSymF where
 instance Show SSymF where
     show (SSymF xs) = "F " ++ show xs
 
+instance Graded SSymF where grade (SSymF xs) = length xs
+
 -- |Construct a fundamental basis element in SSym.
 -- The list of ints must be a permutation of [1..n], eg [1,2], [3,4,2,1].
 ssymF :: [Int] -> Vect Q SSymF
@@ -143,11 +174,14 @@ instance (Eq k, Num k) => Coalgebra k SSymF where
 instance (Eq k, Num k) => Bialgebra k SSymF where {}
 
 instance (Eq k, Num k) => HopfAlgebra k SSymF where
+    antipode = gradedConnectedAntipode
+    {-
     antipode = linear antipode' where
         antipode' (SSymF []) = return (SSymF [])
         antipode' x@(SSymF xs) = (negatev . mult . (id `tf` antipode) . removeTerm (SSymF [],x) . comult . return) x
         -- This expression for antipode is derived from mult . (id `tf` antipode) . comult == unit . counit
         -- It's possible because this is a graded, connected Hopf algebra. (connected means the counit is projection onto the grade 0 part)
+    -}
 -- It would be nicer to have an explicit expression for antipode.
 {-
 instance (Eq k, Num k) => HopfAlgebra k SSymF where
@@ -179,6 +213,8 @@ instance Ord SSymM where
 
 instance Show SSymM where
     show (SSymM xs) = "M " ++ show xs
+
+instance Graded SSymM where grade (SSymM xs) = length xs
 
 -- |Construct a monomial basis element in SSym.
 -- The list of ints must be a permutation of [1..n], eg [1,2], [3,4,2,1].
@@ -258,7 +294,8 @@ instance (Eq k, Num k) => Coalgebra k SSymM where
 instance (Eq k, Num k) => Bialgebra k SSymM where {}
 
 instance (Eq k, Num k) => HopfAlgebra k SSymM where
-    antipode = ssymFtoM . antipode . ssymMtoF
+    antipode = gradedConnectedAntipode
+    -- antipode = ssymFtoM . antipode . ssymMtoF
 
 
 -- Hazewinkel p265
@@ -286,10 +323,13 @@ instance (Eq k, Num k) => Coalgebra k (Dual SSymF) where
 instance (Eq k, Num k) => Bialgebra k (Dual SSymF) where {}
 
 instance (Eq k, Num k) => HopfAlgebra k (Dual SSymF) where
+    antipode = gradedConnectedAntipode
+    {-
     antipode = linear antipode' where
         antipode' (Dual (SSymF [])) = return (Dual (SSymF []))
         antipode' x@(Dual (SSymF xs)) =
             (negatev . mult . (id `tf` antipode) . removeTerm (Dual (SSymF []),x) . comult . return) x
+    -}
 
 -- This pairing is positive definite (Hazewinkel p267)
 instance (Eq k, Num k) => HasPairing k SSymF (Dual SSymF) where
@@ -324,6 +364,8 @@ newtype YSymF a = YSymF (PBT a) deriving (Eq, Ord, Functor)
 
 instance Show a => Show (YSymF a) where
     show (YSymF t) = "F(" ++ show t ++ ")"
+
+instance Graded (YSymF a) where grade (YSymF t) = nodecount t
 
 -- |Construct the element of YSym in the fundamental basis indexed by the given tree
 ysymF :: PBT a -> Vect Q (YSymF a)
@@ -408,9 +450,12 @@ instance (Eq k, Num k, Ord a) => Algebra k (YSymF a) where
 instance (Eq k, Num k, Ord a) => Bialgebra k (YSymF a) where {}
 
 instance (Eq k, Num k, Ord a) => HopfAlgebra k (YSymF a) where
+    antipode = gradedConnectedAntipode
+    {-
     antipode = linear antipode' where
         antipode' (YSymF E) = return (YSymF E)
         antipode' x = (negatev . mult . (id `tf` antipode) . removeTerm (YSymF E,x) . comult . return) x
+    -}
 
 
 -- |An alternative \"monomial\" basis for (the dual of) the Loday-Ronco Hopf algebra of binary trees, YSym.
@@ -418,6 +463,8 @@ newtype YSymM = YSymM (PBT ()) deriving (Eq, Ord)
 
 instance Show YSymM where
     show (YSymM t) = "M(" ++ show t ++ ")"
+
+instance Graded YSymM where grade (YSymM t) = nodecount t
 
 -- |Construct the element of YSym in the monomial basis indexed by the given tree
 ysymM :: PBT () -> Vect Q YSymM
@@ -486,7 +533,8 @@ instance (Eq k, Num k) => Coalgebra k YSymM where
 instance (Eq k, Num k) => Bialgebra k YSymM where {}
 
 instance (Eq k, Num k) => HopfAlgebra k YSymM where
-    antipode = ysymFtoM . antipode . ysymMtoF 
+    antipode = gradedConnectedAntipode
+    -- antipode = ysymFtoM . antipode . ysymMtoF 
 
 
 -- QSYM: QUASI-SYMMETRIC FUNCTIONS
@@ -522,6 +570,8 @@ instance Ord QSymM where
 instance Show QSymM where
     show (QSymM xs) = "M " ++ show xs
 
+instance Graded QSymM where grade (QSymM xs) = sum xs
+
 -- |Construct the element of QSym in the monomial basis indexed by the given composition
 qsymM :: [Int] -> Vect Q QSymM
 qsymM xs | all (>0) xs = return (QSymM xs)
@@ -540,9 +590,12 @@ instance (Eq k, Num k) => Coalgebra k QSymM where
 instance (Eq k, Num k) => Bialgebra k QSymM where {}
 
 instance (Eq k, Num k) => HopfAlgebra k QSymM where
+    antipode = gradedConnectedAntipode
+    {-
     antipode = linear antipode' where
         antipode' (QSymM alpha) = (-1)^length alpha * sumv [return (QSymM beta) | beta <- coarsenings (reverse alpha)]
         -- antipode' (QSymM alpha) = (-1)^length alpha * sumv [return (QSymM (reverse beta)) | beta <- coarsenings alpha]
+    -}
 
 coarsenings (x1:x2:xs) = map (x1:) (coarsenings (x2:xs)) ++ coarsenings ((x1+x2):xs)
 coarsenings xs = [xs] -- for xs a singleton or null
@@ -559,6 +612,8 @@ instance Ord QSymF where
 
 instance Show QSymF where
     show (QSymF xs) = "F " ++ show xs
+
+instance Graded QSymF where grade (QSymF xs) = sum xs
 
 -- |Construct the element of QSym in the fundamental basis indexed by the given composition
 qsymF :: [Int] -> Vect Q QSymF
@@ -586,7 +641,8 @@ instance (Eq k, Num k) => Coalgebra k QSymF where
 instance (Eq k, Num k) => Bialgebra k QSymF where {}
 
 instance (Eq k, Num k) => HopfAlgebra k QSymF where
-    antipode = qsymMtoF . antipode . qsymFtoM
+    antipode = gradedConnectedAntipode
+    -- antipode = qsymMtoF . antipode . qsymFtoM
 
 
 -- QUASI-SYMMETRIC POLYNOMIALS
@@ -611,6 +667,8 @@ newtype SymM = SymM [Int] deriving (Eq,Show)
 
 instance Ord SymM where
     compare (SymM xs) (SymM ys) = compare (sum xs, ys) (sum ys, xs) -- note the order reversal in snd
+
+instance Graded SymM where grade (SymM xs) = sum xs
 
 -- |Construct the element of Sym in the monomial basis indexed by the given integer partition
 symM :: [Int] -> Vect Q SymM
@@ -643,15 +701,19 @@ instance (Eq k, Num k) => Coalgebra k SymM where
 instance (Eq k, Num k) => Bialgebra k SymM where {}
 
 instance (Eq k, Num k) => HopfAlgebra k SymM where
+    antipode = gradedConnectedAntipode
+    {-
     antipode = linear antipode' where
         antipode' (SymM []) = return (SymM [])
         antipode' x = (negatev . mult . (id `tf` antipode) . removeTerm (SymM [],x) . comult . return) x
-
+    -}
 
 -- |The elementary basis for Sym, the Hopf algebra of symmetric functions. Defined informally as
 -- > symE [n] = symM (replicate n 1)
 -- > symE lambda = product [symE [p] | p <- lambda]
 newtype SymE = SymE [Int] deriving (Eq,Ord,Show)
+
+instance Graded SymE where grade (SymE xs) = sum xs
 
 symE :: [Int] -> Vect Q SymE
 symE xs | all (>0) xs = return (SymE $ sortDesc xs)
@@ -670,6 +732,8 @@ instance (Eq k, Num k) => Coalgebra k SymE where
         e i = SymE [i]
 
 instance (Eq k, Num k) => Bialgebra k SymE where {}
+
+-- TODO: HopfAlgebra instance?
 
 -- |Convert from the elementary to the monomial basis of Sym
 symEtoM :: (Eq k, Num k) => Vect k SymE -> Vect k SymM
@@ -701,6 +765,8 @@ instance (Eq k, Num k) => Coalgebra k SymH where
 
 instance (Eq k, Num k) => Bialgebra k SymH where {}
 
+-- TODO: HopfAlgebra instance?
+
 -- |Convert from the complete to the monomial basis of Sym
 symHtoM :: (Eq k, Num k) => Vect k SymH -> Vect k SymM
 symHtoM = linear symHtoM' where
@@ -713,8 +779,9 @@ symHtoM = linear symHtoM' where
 -- |A basis for NSym, the Hopf algebra of non-commutative symmetric functions, indexed by compositions
 newtype NSym = NSym [Int] deriving (Eq,Ord,Show)
 
+instance Graded NSym where grade (NSym xs) = sum xs
+
 nsym :: [Int] -> Vect Q NSym
-nsym xs = return (NSym xs)
 nsym xs | all (>0) xs = return (NSym xs)
         | otherwise = error "nsym: not a composition"
 

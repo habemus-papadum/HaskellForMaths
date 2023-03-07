@@ -99,7 +99,7 @@ cup _ = zerov
 
 -- also called xminus
 over :: [Oriented] -> TangleRep [Oriented]
-over [u, v] = q  *> do {[] <- cup [u, v]; cap []}
+over [u, v] = q  *> do {_ <- cup [u, v]; cap []}
           <+> q' *> return [u, v]
 
 {-
@@ -112,7 +112,7 @@ over' (T i j) = case compare i j of
 -}
 -- also called xplus
 under :: [Oriented] -> TangleRep [Oriented]
-under [u, v] = q' *> do {[] <- cup [u, v]; cap []}
+under [u, v] = q' *> do {_ <- cup [u, v]; cap []}
            <+> q  *> return [u, v]
 
 {-
@@ -123,8 +123,11 @@ under' (T i j) = case compare i j of
                  LT -> q' *> (return (T j i) <+> (q^2 - q'^2) *> return (T i j))  -- +- -> q' -+ + (q-q^-3) -+
                  GT -> q' *> return (T j i)                                       -- -+ -> q' +-
 -}
-loop = nf $ do {[i, j] <- cap []; cup [i, j]}
+loop = nf $ do {ij <- cap []; cup ij}
 
+{-
+-- The following doesn't work, because the pattern matches can fail, but Vect has no MonadFail instance.
+-- Commented out for now, pending figuring out the best fix
 trefoil = nf $ do
     [i, j] <- cap []
     [k, l] <- cap []
@@ -133,6 +136,7 @@ trefoil = nf $ do
     [r, s] <- over [n, l]
     cup [p, s]
     cup [q, r]
+-}
 
 
 -- KAUFFMAN BRACKET AS A REPRESENTATION FROM TANGLE TO VECT
