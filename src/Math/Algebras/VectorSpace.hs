@@ -8,7 +8,7 @@ module Math.Algebras.VectorSpace where
 
 import Prelude hiding (  (<*), (*>) )
 
-import Control.Applicative hiding ( (<*), (*>) )
+import Control.Applicative ()
 import Control.Monad (ap)
 import qualified Data.List as L
 import qualified Data.Set as S -- only needed for toSet
@@ -118,7 +118,7 @@ smultR (V ts) k = V [(ei,xi*k) | (ei,xi) <- ts]
 -- liftFromBasis f (V ts) = V [(f b, x) | (b, x) <- ts]
 -- if f is not order-preserving, then you need to call nf afterwards
 
--- |Convert an element of Vect k b into normal form. Normal form consists in having the basis elements in ascending order,
+-- |Convert an element of Vect k b into `normal form`. Normal form consists in having the basis elements in ascending order,
 -- with no duplicates, and all coefficients non-zero
 nf :: (Eq k, Num k, Ord b) => Vect k b -> Vect k b
 nf (V ts) = V $ nf' $ L.sortBy compareFst ts where

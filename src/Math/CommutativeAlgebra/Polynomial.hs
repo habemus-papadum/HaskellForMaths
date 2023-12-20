@@ -288,6 +288,7 @@ instance (Eq k, Num k, Ord a, Mon a, Ord b, Mon b) => Algebra k (Elim2 a b) wher
 -- This is occasionally useful.
 
 -- |bind performs variable substitution
+-- adam
 bind :: (Eq k, Num k, MonomialConstructor m, Ord a, Show a, Algebra k a) =>
     Vect k (m v) -> (v -> Vect k a) -> Vect k a
 v `bind` f = linear (\m -> product [f x ^ i | (x,i) <- mindices m]) v
@@ -308,6 +309,7 @@ eval f vs = unwrap $ f `bind` sub
                   Nothing -> error ("eval: no binding given for " ++ show x)
 
 -- |Perform variable substitution on a polynomial.
+-- // 
 -- For example @subst (x*z-y^2) [(x,u^2),(y,u*v),(z,v^2)]@ performs the substitution x -> u^2, y -> u*v, z -> v^2.
 subst :: (Eq k, Num k, MonomialConstructor m, Eq (m u), Show u, Ord (m v), Show (m v), Algebra k (m v)) =>
     Vect k (m u) -> [(Vect k (m u), Vect k (m v))] -> Vect k (m v)

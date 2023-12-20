@@ -219,7 +219,7 @@ kernelRRE m =
         is = findLeadingCols 1 (L.transpose m) -- these are the indices of the columns which have a leading 1
         js = [1..nc] L.\\ is
         freeCols = let m' = take (length is) m -- discard zero rows
-                   in zip is $ L.transpose [map (negate . (!j)) m' | j <- js]
+                   in zip is $ L.transpose [map (negate . (! j)) m' | j <- js]
         boundCols = zip js (idMx $ length js)
     in L.transpose $ map snd $ L.sort $ freeCols ++ boundCols
     where

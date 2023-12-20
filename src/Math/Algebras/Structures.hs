@@ -187,7 +187,6 @@ instance (Eq k, Num k, Ord m, Mon m) => Coalgebra k (MonoidCoalgebra m) where
 
 class Algebra k a => Module k a m where
     action :: Vect k (Tensor a m) -> Vect k m
-
 r *. m = action (r `te` m)
 
 class Coalgebra k c => Comodule k c n where
